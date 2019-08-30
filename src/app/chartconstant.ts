@@ -37,29 +37,44 @@ export class Chartconstant {
     this.chartObject6.legend = {
                                   "fontsize" : "14px"
                                 };
+    this.chartObject6.sliced = {
+      'John' : false,
+      'Jane' : true
+    };
     this.chartObject6.chartType = 'pie';
     this.chartObject6.size='80%';
     this.chartObject6.innersize='60%';
+    this.chartObject6.plotOptions = {
+                                      pie: {
+                                        allowPointSelect: true,
+                                        cursor: 'pointer',
+                                        dataLabels: {
+                                          enabled: true,
+                                          format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                                        }
+                                      }
+                                    };
   }
 
   setChartObject7(){
     this.chartObject7 = new ChartConstants();
-    this.chartObject7.datakeys = ['John','Jane'];
-
+    this.chartObject7.datakeys = ['John','Jane','Joe'];
     this.chartObject7.colors= {
-      "John" : "#2196f3",
-      "Jane" : "#664477",
-      "Joe" : "#222547"
-    };
+                                "John" : "#2196f3",
+                                "Jane" : "#664477",
+                                "Joe" : "#222547"
+                              };
     this.chartObject7.labels = {
-      "John" : "John Score",
-      "Jane" : "Jane Score",
-      "Joe" : "Joe Score"
-    };
+                                "John" : "John Score",
+                                "Jane" : "Jane Score",
+                                "Joe" : "Joe Score"
+                              };
     this.chartObject7.legend = {
-      "fontsize" : "14px"
-    };
-    this.chartObject7.chartType = 'bar';
+                                  "fontsize" : "14px"
+                                };
+    this.chartObject7.chartType = 'column';
+    this.chartObject7.stacking = 'normal';
+    this.chartObject7.yAxisTitle = " saruav"
   }
 }
 

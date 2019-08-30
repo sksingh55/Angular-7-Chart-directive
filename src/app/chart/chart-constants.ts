@@ -6,9 +6,12 @@ export class ChartConstants {
   innersize : String;
   colors : any;
   labels : Object;
-  dimension : any;
   tooltips : any;
   datalabels : any;
   legend : any;
+  yAxisTitle:String;
+  stacking:String;
+  plotOptions:{};
+  sliced : any;
 
 }

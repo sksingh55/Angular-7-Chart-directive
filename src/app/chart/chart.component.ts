@@ -22,6 +22,7 @@ class PieObject {
   color:String;
   size:String;
   innerSize:String;
+  sliced : boolean;
 }
 
 
@@ -64,7 +65,7 @@ export class ChartComponent implements OnInit {
 
 
 
-  configChart() {
+  private configChart() {
     let chart = {
       chart: {},
       title: {},
@@ -72,7 +73,7 @@ export class ChartComponent implements OnInit {
       tooltips: {},
       colors: [],
       xAxis: {},
-      yAxis: [],
+      yAxis: {},
       plotOptions: {},
       credits: {},
       legend: {},
@@ -82,7 +83,7 @@ export class ChartComponent implements OnInit {
     return chart;
   }
 
-  setChart(chartObject , data){
+  private setChart(chartObject , data){
     let chart = this.configChart();
     chart['chart'] = chartObject['chart'];
     chart['title'] = chartObject['title'];
@@ -112,7 +113,7 @@ export class ChartComponent implements OnInit {
 
 
 
-  setChart2(chartConstant:ChartConstants , chartData){
+  private setChart2(chartConstant:ChartConstants , chartData){
     let chart = this.configChart();
     let datakeys = chartConstant.datakeys;
     let colors = chartConstant.colors;
@@ -124,6 +125,10 @@ export class ChartComponent implements OnInit {
     let legend = chartConstant.legend;
     let charttype = chartConstant.chartType;
     let xaxiskey = chartConstant.xAxis;
+    let yaxistitle = chartConstant.yAxisTitle;
+    let stacking = chartConstant.stacking;
+    let plotoptions = chartConstant.plotOptions;
+    let sliced = chartConstant.sliced;
     if(!chartConstant){
       return {};
     }
@@ -134,8 +139,8 @@ export class ChartComponent implements OnInit {
     let seriesdata = [];
     if(charttype == 'donut' || charttype == 'pie') {
       chart.chart = {
-        type : 'pie'
-      };
+                      type : 'pie'
+                    };
       if(!datakeys || datakeys.length === 0){
         datakeys = this.getDataKeysFromData(chartData);
       }
@@ -150,36 +155,46 @@ export class ChartComponent implements OnInit {
           obj.size=size;
           obj.innerSize=innerSize;
         }
+        obj.sliced = sliced[key];
         seriesdata.push(obj);
       }
       chart.series.push({
         data:seriesdata
       });
-
     }
-
-    else if(charttype === 'bar' || charttype === 'column') {
-      //Data formatting for bar and column charts
+    else{
       chart.chart = {
         type : charttype
       };
-      console.log("i am in bar");
       if (!datakeys || datakeys.length === 0) {
         datakeys = this.getDataKeysFromData(chartData);
       }
       for(let key of datakeys){
         chart.series.push({
-          name : key,
-          data : chartData.get(key),
-          color: colors[key]
-        });
+                            name : key,
+                            data : chartData.get(key),
+                            color: colors[key]
+                          });
       }
-      chart.yAxis.push({
-        title : "fvfgb"
-      })
+      chart.yAxis = {
+                      title : {
+                        text:yaxistitle
+                      }
+                      };
+
     }
 
 
+    if(stacking){
+      chart.plotOptions= {
+                          series: {
+                            stacking: stacking
+                          }
+                        };
+    }
+    if(plotoptions){
+      chart.plotOptions = plotoptions;
+    }
     chart.xAxis = xaxiskey;
     chart['tooltip'] = tooltip ? tooltip : {};
     chart['datalabels'] = datalabels ? datalabels : {};
@@ -188,7 +203,7 @@ export class ChartComponent implements OnInit {
     return chart;
   }
 
-  getDataKeysFromData(chartData){
+  private getDataKeysFromData(chartData){
     console.log(chartData);
     let datakeys = [];
     for(let key of chartData.keys()) {
@@ -198,6 +213,5 @@ export class ChartComponent implements OnInit {
       }
     }
     return datakeys;
-
   }
 }
