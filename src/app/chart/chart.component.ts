@@ -129,6 +129,7 @@ export class ChartComponent implements OnInit {
     let stacking = chartConstant.stacking;
     let plotoptions = chartConstant.plotOptions;
     let sliced = chartConstant.sliced;
+    let credits = chartConstant.credits;
     if(!chartConstant){
       return {};
     }
@@ -195,10 +196,15 @@ export class ChartComponent implements OnInit {
     if(plotoptions){
       chart.plotOptions = plotoptions;
     }
-    chart.xAxis = xaxiskey;
+    if(xaxiskey){
+      chart.xAxis = {
+        categories:xaxiskey
+      };
+    }
     chart['tooltip'] = tooltip ? tooltip : {};
     chart['datalabels'] = datalabels ? datalabels : {};
     chart['legend'] = legend ? legend : {};
+    chart['credits'] = false;
     console.log("final Cahrt" , chart);
     return chart;
   }

@@ -13,5 +13,5 @@ export class ChartConstants {
   stacking:String;
   plotOptions:{};
   sliced : any;
-
+  credits:boolean;
 }
