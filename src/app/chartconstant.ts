@@ -1,13 +1,6 @@
-import {ChartConfig} from "./chart/chart-config";
-import {DefaultCharts} from "./chart/default-charts";
 import {ChartConstants} from "./chart/chart-constants";
 
 export class Chartconstant {
-  chartObject1 : ChartConfig;
-  chartObject2 : ChartConfig;
-  chartObject3 : ChartConfig;
-  chartObject4 : ChartConfig;
-  chartObject5 : ChartConfig;
   chartObject6 : ChartConstants;
   chartObject7 : ChartConstants;
   chartObject8 : ChartConstants;
@@ -15,12 +8,6 @@ export class Chartconstant {
   chartObject10 : ChartConstants;
   chartObject11 : ChartConstants;
   constructor() {
-    let defaultChart:DefaultCharts = new DefaultCharts();
-    this.chartObject1 = defaultChart.lineChart;
-    this.chartObject2 = defaultChart.basicBarChart;
-    this.chartObject3 = defaultChart.stackedBarChart;
-    this.chartObject4 = defaultChart.columnBarChart;
-    this.chartObject5 = defaultChart.stackedColumnBarChart;
     this.setChartObject6();
     this.setChartObject7();
     this.setChartObject8();
@@ -54,13 +41,14 @@ export class Chartconstant {
   setChartObject10(){
     this.chartObject10 = new ChartConstants();
     this.chartObject10.colors = {
-      'Telgu'  : '#5C6BC0',
-      'Hindi'  : '#42A5F5',
-      'Oriya'  : '#26C6DA',
-      'English': '#26A69A'
+      '2019'  : '#5C6BC0',
+      '2018'  : '#42A5F5',
+      '2017'  : '#26C6DA',
+      '2016': '#26A69A',
+      'demo': '#26A69A',
+      '2015': '#26C6DA',
     };
-    this.chartObject10.chartType = 'spline';
-    this.chartObject10.xAxis = ['2015', '2016', '2017', '2018', '2019'];
+    this.chartObject10.chartType = 'donut';
     this.chartObject10.yAxisTitle = 'Number of schools';
     this.chartObject10.plotOptions = {
             line: {
@@ -72,6 +60,10 @@ export class Chartconstant {
         };
     this.chartObject10.legend = {
                 enabled: true
+    };
+    this.chartObject10.sliced = {
+      "2019" : true,
+      "2016" : true,
     };
   }
 
@@ -140,6 +132,7 @@ export class Chartconstant {
 
   setChartObject6(){
     this.chartObject6 = new ChartConstants();
+    this.chartObject6.chartTitle = "Pie Chart";
     this.chartObject6.colors= {
                                 "John" : "#2196f3",
                                 "Jane" : "#664477",
@@ -170,6 +163,7 @@ export class Chartconstant {
                                         }
                                       }
                                     };
+
   }
 
   setChartObject7(){
@@ -188,8 +182,8 @@ export class Chartconstant {
     this.chartObject7.legend = {
                                   "fontsize" : "14px"
                                 };
-    this.chartObject7.chartType = 'column';
+    this.chartObject7.chartType = 'spline';
     this.chartObject7.stacking = 'normal';
-    this.chartObject7.yAxisTitle = " saruav"
+    this.chartObject7.yAxisTitle = " saruav";
   }
 }

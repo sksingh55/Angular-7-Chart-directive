@@ -1,9 +1,6 @@
 import {Component, ElementRef, Input, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import * as Highcharts from 'highcharts';
-import {formatDate} from "@angular/common";
-import {DefaultCharts} from "./default-charts";
 import {ChartConstants} from "./chart-constants";
-import {ajax} from "rxjs/ajax";
 
 declare var require: any;
 let Boost = require('highcharts/modules/boost');
@@ -42,182 +39,163 @@ export class ChartComponent implements OnInit {
   @Input() chartData:any[];
   @Input() chartData2 = new Map();
 
-  defaultCharts = new DefaultCharts();
+  chart = {
+    chart: {},
+    title: {},
+    subtitle:{},
+    tooltips: {},
+    colors: [],
+    xAxis: {},
+    yAxis: {},
+    plotOptions: {},
+    credits: {},
+    legend: {},
+    series: [],
+    responsive :{},
+  };
   @ViewChild('chart',{read:ElementRef,static:true}) chartId : ElementRef;
-  chart : any;
 
   ngOnInit() {
   }
 
   ngOnChanges(changes : SimpleChanges){
-    console.log(this.chartData2);
-    if(this.chartConfig2){
-      console.log("cdscdsc");
-      this.chart = this.setChart2(this.chartConfig2,this.chartData2);
-    }else {
-      console.log("scdscdacaddvav");
-      this.chart = this.setChart(this.chartConfig, this.chartData);
-    }
+    this.setChart(this.chartConfig2,this.chartData2);
     this.chartId.nativeElement.id = this.id;
     Highcharts.chart(this.id, this.chart);
   }
 
 
-
-
-  private configChart() {
-    let chart = {
-      chart: {},
-      title: {},
-      subtitle:{},
-      tooltips: {},
-      colors: [],
-      xAxis: {},
-      yAxis: {},
-      plotOptions: {},
-      credits: {},
-      legend: {},
-      series: [],
-      responsive :{},
-    };
-    return chart;
-  }
-
-  private setChart(chartObject , data){
-    let chart = this.configChart();
-    chart['chart'] = chartObject['chart'];
-    chart['title'] = chartObject['title'];
-    chart['subtitle'] = chartObject['subtitle'];
-    chart['tooltips'] = chartObject['tooltips'];
-    chart['colors'] = chartObject['colors'];
-    chart['xAxis'] = chartObject['xAxis'];
-    chart['yAxis'] = chartObject['yAxis'];
-    chart['plotOptions'] = chartObject['plotOptions'];
-    chart['credits'] = chartObject['credits'];
-    chart['legend'] = chartObject['legend'];
-    chart['responsive'] = chartObject['responsive'];
-    chart['colors'] = chartObject['colors'];
-    chart['series']=  this.formatData(data);
-    return chart;
-  }
-
-  formatData(data:any){
-    let series : any = [];
-    for(let val of data){
-      series.push(val);
-    }
-    console.log(series);
-    return data;
-  }
-
-
-
-
-  private setChart2(chartConstant:ChartConstants , chartData){
-    let chart = this.configChart();
-    let datakeys = chartConstant.datakeys;
-    let colors = chartConstant.colors;
-    let labels = chartConstant.labels;
-    let size = chartConstant.size;
-    let innerSize = chartConstant.innersize;
-    let tooltip = chartConstant.tooltips;
-    let datalabels = chartConstant.datalabels;
-    let legend = chartConstant.legend;
-    let charttype = chartConstant.chartType;
-    let xaxiskey = chartConstant.xAxis;
-    let yaxistitle = chartConstant.yAxisTitle;
-    let stacking = chartConstant.stacking;
-    let plotoptions = chartConstant.plotOptions;
-    let sliced = chartConstant.sliced;
-    let credits = chartConstant.credits;
+  private setChart(chartConstant:ChartConstants , chartData){
     if(!chartConstant){
       return {};
     }
-    if(!chartConstant.xAxis){
-      chart['xAxis'] = {};
+
+    this.insertChartTitle(chartConstant.chartTitle);
+    if(!chartConstant.datakeys || chartConstant.datakeys.length === 0){
+      chartConstant.datakeys = this.getDataKeysFromData(chartData);
     }
-
-    let seriesdata = [];
-    if(charttype == 'donut' || charttype == 'pie') {
-      chart.chart = {
-                      type : 'pie'
-                    };
-      if(!datakeys || datakeys.length === 0){
-        datakeys = this.getDataKeysFromData(chartData);
-      }
-      for (let key of datakeys) {
-        let obj = new PieObject();
-        obj.name = (labels && labels[key]) ? labels[key] : key;
-        obj.y = chartData.get(key);
-        if(colors && colors[key]){
-          obj.color = colors[key];
-        }
-        if(charttype == 'donut'){
-          obj.size=size;
-          obj.innerSize=innerSize;
-        }
-        obj.sliced = sliced[key];
-        seriesdata.push(obj);
-      }
-      chart.series.push({
-        data:seriesdata
-      });
-    }
-    else{
-      chart.chart = {
-        type : charttype
-      };
-      if (!datakeys || datakeys.length === 0) {
-        datakeys = this.getDataKeysFromData(chartData);
-      }
-      for(let key of datakeys){
-        chart.series.push({
-                            name : key,
-                            data : chartData.get(key),
-                            color: colors[key]
-                          });
-      }
-      chart.yAxis = {
-                      title : {
-                        text:yaxistitle
-                      }
-                      };
-
-    }
-
-
-    if(stacking){
-      chart.plotOptions= {
+    if(chartConstant.stacking){
+      this.chart.plotOptions= {
                           series: {
-                            stacking: stacking
+                            stacking: chartConstant.stacking
                           }
                         };
     }
-    if(plotoptions){
-      chart.plotOptions = plotoptions;
+    if(chartConstant.plotOptions){
+      this.chart.plotOptions = chartConstant.plotOptions;
     }
-    if(xaxiskey){
-      chart.xAxis = {
-        categories:xaxiskey
-      };
+    this.chart['tooltip'] = chartConstant.tooltips ? chartConstant.tooltips : {};
+    this.chart['datalabels'] = chartConstant.datalabels ? chartConstant.datalabels : {};
+    this.chart['legend'] = chartConstant.legend ? chartConstant.legend : {};
+    this.chart['credits'] = false;
+    if(chartConstant.chartType == 'donut' || chartConstant.chartType == 'pie') {
+      this.formatterForPieAndDonutChart(chartConstant,chartData);
     }
-    chart['tooltip'] = tooltip ? tooltip : {};
-    chart['datalabels'] = datalabels ? datalabels : {};
-    chart['legend'] = legend ? legend : {};
-    chart['credits'] = false;
-    console.log("final Cahrt" , chart);
-    return chart;
+    else{
+      this.chart['xAxis'] = this.insertxAxis(chartConstant.xAxis,chartData);
+      this.formatterForChartOtherThanPieAndDonut(chartConstant,chartData,this.chart.xAxis['categories']);
+    }
+    console.log("final Chart object for chart id" , this.id, " is", this.chart);
   }
 
   private getDataKeysFromData(chartData){
-    console.log(chartData);
     let datakeys = [];
-    for(let key of chartData.keys()) {
-      console.log(chartData.get(key))
-      if (chartData.has(key)) {
-        datakeys.push(key);
-      }
-    }
+    chartData.forEach((value,key)=>{
+      datakeys.push(key)
+    });
     return datakeys;
   }
+
+  private insertxAxis(xAxis:any,chartData){
+    if(!xAxis){
+      xAxis = this.getXAxisFromData(chartData);
+    }
+    let xAxisList = [];
+    for(let value of xAxis){
+      xAxisList.push(value);
+    }
+    let xAxisObject ={
+      categories:xAxisList
+    };
+    return xAxisObject;
+
+  }
+
+  private getXAxisFromData(chartData){
+    let xAxis = new Set();
+    chartData.forEach((value, key)=>{
+      value.forEach((value, key)=>{
+        xAxis.add(key);
+      });
+    });
+    return xAxis;
+  }
+
+  private insertChartTitle(chartTitle){
+    if(chartTitle){
+                  this.chart['title']={
+                    text : chartTitle
+                  };
+                }
+  }
+
+  private formatterForPieAndDonutChart(chartConstant:ChartConstants , chartData){
+    let seriesdata = [];
+    this.chart.chart = {
+                          type : 'pie'
+                        };
+    chartData.forEach((outervalue,outerkey)=>{
+      outervalue.forEach((value,key)=>{
+        let obj = new PieObject();
+        obj.name = (chartConstant.labels && chartConstant.labels[key]) ? chartConstant.labels[key] : key;
+        obj.y = value;
+        if(chartConstant.colors && chartConstant.colors[key]){
+          obj.color = chartConstant.colors[key];
+        }
+        if(chartConstant.chartType == 'donut'){
+          obj.size=chartConstant.size;
+          obj.innerSize=chartConstant.innersize;
+        }
+        if(chartConstant.sliced&& chartConstant.sliced[key]) {
+          obj.sliced = chartConstant.sliced[key];
+        }
+        seriesdata.push(obj);
+      });
+    });
+    this.chart.series.push({
+                            data:seriesdata
+                          });
+    console.log(this.chart.series);
+  }
+
+
+  private formatterForChartOtherThanPieAndDonut(chartConstant:ChartConstants , chartData , xAxis){
+    this.chart.chart = {
+      type : chartConstant.chartType
+    };
+
+
+
+    chartData.forEach((value, key) => {
+      let seriesObject = {
+        name : String,
+        data : [],
+        color: String
+      };
+      seriesObject.name = key;
+      seriesObject.color = chartConstant.colors[key];
+      for(let key2 of xAxis){
+        seriesObject.data.push(value.get(key2));
+      }
+      this.chart.series.push(seriesObject);
+    });
+
+    this.chart.yAxis = {
+      title : {
+        text:chartConstant.yAxisTitle
+      }
+    };
+
+  }
+
 }

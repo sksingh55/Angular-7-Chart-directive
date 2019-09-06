@@ -1,4 +1,5 @@
 export class ChartConstants {
+  chartTitle:string;
   datakeys:string[];
   xAxis : string[];
   chartType : string;

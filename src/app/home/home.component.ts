@@ -22,10 +22,20 @@ export class HomeComponent implements OnInit {
     data: [3, 4, 4, 2, 5]
   }];
 
+  Data3 = new Map()
+    .set('2019',5)
+    .set('2018',5)
+    .set('2017',1)
+    .set('2016',5)
+    .set('2015',5);
+  Data4 = new Map()
+    .set('2019',5)
+    .set('2018',5)
+    .set('2017',1)
+    .set('2016',4)
+    .set('2015',5);
   seriesData3 = new Map()
-    .set('John',[5, 3, 4, 7, 2])
-    .set('Jane',[2, 2, 3, 2, 1])
-    .set('Joe',[3, 4, 4, 2, 5]);
+    .set("demo",this.Data3);
 
   seriesData2 = new Map()
     .set('John',5)
