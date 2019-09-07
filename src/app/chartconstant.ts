@@ -48,7 +48,7 @@ export class Chartconstant {
       'demo': '#26A69A',
       '2015': '#26C6DA',
     };
-    this.chartObject10.chartType = 'donut';
+    this.chartObject10.chartType = 'spline';
     this.chartObject10.yAxisTitle = 'Number of schools';
     this.chartObject10.plotOptions = {
             line: {

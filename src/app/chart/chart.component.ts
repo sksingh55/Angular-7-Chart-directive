@@ -22,6 +22,12 @@ class PieObject {
   sliced : boolean;
 }
 
+class LineObject {
+  name:any;
+  data:any[]=[];
+  color:any;
+}
+
 
 
 @Component({
@@ -37,7 +43,7 @@ export class ChartComponent implements OnInit {
   @Input() chartConfig2:any;
   @Input() id:string;
   @Input() chartData:any[];
-  @Input() chartData2 = new Map();
+  @Input() chartData2 : Object;
 
   chart = {
     chart: {},
@@ -98,11 +104,15 @@ export class ChartComponent implements OnInit {
     console.log("final Chart object for chart id" , this.id, " is", this.chart);
   }
 
+  private getRandomColor() {
+    var color = Math.floor(0x1000000 * Math.random()).toString(16);
+    return '#' + ('000000' + color).slice(-6);
+  }
   private getDataKeysFromData(chartData){
     let datakeys = [];
-    chartData.forEach((value,key)=>{
-      datakeys.push(key)
-    });
+    for(let key of Object.keys(chartData)){
+      datakeys.push(key);
+    }
     return datakeys;
   }
 
@@ -123,11 +133,11 @@ export class ChartComponent implements OnInit {
 
   private getXAxisFromData(chartData){
     let xAxis = new Set();
-    chartData.forEach((value, key)=>{
-      value.forEach((value, key)=>{
-        xAxis.add(key);
-      });
-    });
+    for(let key of Object.keys(chartData)){
+      for(let xaxis of Object.keys(chartData[key])){
+        xAxis.add(xaxis);
+      }
+    }
     return xAxis;
   }
 
@@ -144,28 +154,31 @@ export class ChartComponent implements OnInit {
     this.chart.chart = {
                           type : 'pie'
                         };
-    chartData.forEach((outervalue,outerkey)=>{
-      outervalue.forEach((value,key)=>{
+
+    for(let keys of Object.keys(chartData)){
+      for(let key2 of Object.keys(chartData[keys])){
         let obj = new PieObject();
-        obj.name = (chartConstant.labels && chartConstant.labels[key]) ? chartConstant.labels[key] : key;
-        obj.y = value;
-        if(chartConstant.colors && chartConstant.colors[key]){
-          obj.color = chartConstant.colors[key];
+        obj.name = (chartConstant.labels && chartConstant.labels[key2]) ? chartConstant.labels[key2] : key2;
+        obj.y = chartData[keys][key2];
+        if(chartConstant.colors && chartConstant.colors[key2]){
+          obj.color = chartConstant.colors[key2];
+        }
+        else{
+          obj.color = this.getRandomColor();
         }
         if(chartConstant.chartType == 'donut'){
           obj.size=chartConstant.size;
           obj.innerSize=chartConstant.innersize;
         }
-        if(chartConstant.sliced&& chartConstant.sliced[key]) {
-          obj.sliced = chartConstant.sliced[key];
+        if(chartConstant.sliced&& chartConstant.sliced[keys]) {
+          obj.sliced = chartConstant.sliced[keys];
         }
         seriesdata.push(obj);
-      });
-    });
+      }
+    }
     this.chart.series.push({
                             data:seriesdata
                           });
-    console.log(this.chart.series);
   }
 
 
@@ -174,21 +187,19 @@ export class ChartComponent implements OnInit {
       type : chartConstant.chartType
     };
 
-
-
-    chartData.forEach((value, key) => {
-      let seriesObject = {
-        name : String,
-        data : [],
-        color: String
-      };
-      seriesObject.name = key;
-      seriesObject.color = chartConstant.colors[key];
+    for(let keys of Object.keys(chartData)) {
+      let seriesObject = new LineObject();
+      seriesObject.name = keys;
+      if (chartConstant.colors[keys]){
+        seriesObject.color = chartConstant.colors[keys];
+      }else{
+        seriesObject.color = this.getRandomColor();
+      }
       for(let key2 of xAxis){
-        seriesObject.data.push(value.get(key2));
+        seriesObject.data.push(chartData[keys][key2]);
       }
       this.chart.series.push(seriesObject);
-    });
+    }
 
     this.chart.yAxis = {
       title : {
