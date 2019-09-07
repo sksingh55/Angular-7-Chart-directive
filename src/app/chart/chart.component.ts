@@ -170,8 +170,8 @@ export class ChartComponent implements OnInit {
           obj.size=chartConstant.size;
           obj.innerSize=chartConstant.innersize;
         }
-        if(chartConstant.sliced&& chartConstant.sliced[keys]) {
-          obj.sliced = chartConstant.sliced[keys];
+        if(chartConstant.sliced&& chartConstant.sliced[key2]) {
+          obj.sliced = chartConstant.sliced[key2];
         }
         seriesdata.push(obj);
       }
